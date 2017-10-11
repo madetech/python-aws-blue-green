@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+import os
+import boto3
+from src.get_inactive_environment import GetInactiveEnvironment
+
+RUNTIME_ERROR_MESSAGE = """Ensure all environment variables are defined:
+AWS_ACCESS_KEY_ID,
+AWS_SECRET_ACCESS_KEY,
+TARGET_DEPLOY_DOMAIN"""
+
+def validate_env_variables():
+    if not os.getenv('AWS_ACCESS_KEY_ID') or\
+      not os.getenv('AWS_SECRET_ACCESS_KEY') or not os.getenv('TARGET_DEPLOY_DOMAIN'):
+        raise RuntimeError(RUNTIME_ERROR_MESSAGE)
+
+if __name__ == "__main__":
+    try:
+        validate_env_variables()
+        aws_client = boto3.client('route53',
+                                  aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                                  aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+                                 )
+        print(GetInactiveEnvironment(
+            client=aws_client,
+            blue=os.getenv('BLUE_DEPLOY_DOMAIN'),
+            green=os.getenv('GREEN_DEPLOY_DOMAIN'),
+            target_domain = os.getenv('TARGET_DEPLOY_DOMAIN')).call())
+    except RuntimeError as error:
+        print(format(error))
