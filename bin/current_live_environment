@@ -1,34 +1,12 @@
 #!/usr/bin/env python
 import os
 import boto3
+from src.get_current_live_environment import GetCurrentLiveEnvironment
 
 RUNTIME_ERROR_MESSAGE = """Ensure all environment variables are defined:
 AWS_ACCESS_KEY_ID,
 AWS_SECRET_ACCESS_KEY,
 TARGET_DEPLOY_DOMAIN"""
-
-class GetCurrentLiveEnvironment:
-    def __init__(self, target_domain):
-        self.target_domain = target_domain
-        self.client = boto3.client('route53',
-                                   aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-                                   aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-                                  )
-
-    def get_resource_record_sets(self):
-        zones = self.client.list_hosted_zones_by_name()
-        chase_to_base_zone_id = zones['HostedZones'][0]['Id']
-        return self.client.list_resource_record_sets(HostedZoneId=chase_to_base_zone_id)['ResourceRecordSets']
-
-    def get_live_record(self):
-        resource_records = self.get_resource_record_sets()
-        records = next(
-            record for record in resource_records if record['Name'] == self.target_domain + "."
-        )
-        return records['AliasTarget']['DNSName']
-
-    def call(self):
-        return self.get_live_record()
 
 def validate_env_variables():
     if not os.getenv('AWS_ACCESS_KEY_ID') or\
@@ -38,6 +16,10 @@ def validate_env_variables():
 if __name__ == "__main__":
     try:
         validate_env_variables()
-        print(GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN')).call())
+        aws_client = boto3.client('route53',
+                                  aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                                  aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+                                 )
+        print(GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), aws_client).call())
     except RuntimeError as error:
         print(format(error))
