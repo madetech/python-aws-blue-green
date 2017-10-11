@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+import os
+import boto3
+import sys
+from src.flip_dns_record import FlipDNSRecord
+
+if __name__ == "__main__":
+    try:
+        aws_client = boto3.client('route53',
+                                  aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                                  aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+                                 )
+        usecase = FlipDNSRecord(
+            client=aws_client,
+            live=sys.argv[1],
+            blue='deploy-test-blue.chase2base.co.uk.',
+            green='deploy-test-green.chase2base.co.uk.',
+            target_domain = os.getenv('TARGET_DEPLOY_DOMAIN')
+        )
+
+        print(usecase.call())
+
+
+    except RuntimeError as error:
+        print(format(error))

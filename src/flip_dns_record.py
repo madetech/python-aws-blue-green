@@ -19,12 +19,13 @@ class FlipDNSRecord:
             return self.green
 
     def get_resource_record_sets(self):
+        return self.client.list_resource_record_sets(HostedZoneId=self.hosted_zone_id())['ResourceRecordSets']
+
+    def hosted_zone_id(self):
         zones = self.client.list_hosted_zones_by_name()
-        zone_id = zones['HostedZones'][0]['Id']
-        return self.client.list_resource_record_sets(HostedZoneId=zone_id)['ResourceRecordSets']
+        return zones['HostedZones'][0]['Id']
 
-
-    def build_resource_struct(self):
+    def build_resource_dict(self):
         new_domain = self.get_non_live_resource()
         resource_records = self.get_resource_record_sets()
 
@@ -35,3 +36,25 @@ class FlipDNSRecord:
         resource['AliasTarget']['DNSName'] = new_domain
 
         return resource
+
+    def build_change_dict(self):
+        return {
+            'HostedZoneId':self.hosted_zone_id(),
+            'ChangeBatch': {
+                'Comment': 'Flipping live to {0}'.format(self.get_non_live_resource()),
+                'Changes': [{
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': self.build_resource_dict()
+                }]
+            }
+        }
+
+    def call(self):
+        change_dict = self.build_change_dict()
+        response = self.client.change_resource_record_sets(
+            HostedZoneId=change_dict['HostedZoneId'],
+            ChangeBatch=change_dict['ChangeBatch']
+        )
+
+        return response
+

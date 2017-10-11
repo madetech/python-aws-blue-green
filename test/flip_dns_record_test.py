@@ -33,4 +33,45 @@ class TestFlipDNSRecord:
             }
         }
 
-        assert usecase.build_resource_struct() == expected_dict
+        assert usecase.build_resource_dict() == expected_dict
+
+    def test_change_dict(self):
+        usecase = FlipDNSRecord(
+            client=ClientMock(),
+            live='test-green.example.co.uk',
+            green='test-green.example.co.uk',
+            blue='test-blue.example.co.uk',
+            target_domain='test.example.co.uk'
+        )
+
+        expected_dict = {
+            'HostedZoneId': '/hosted/id',
+            'ChangeBatch': {
+                'Comment': 'Flipping live to test-blue.example.co.uk.',
+                'Changes': [{
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': 'test.example.co.uk.',
+                        'Type': 'A',
+                        'AliasTarget': {
+                            'HostedZoneId': 'Dan-and-Seb',
+                            'DNSName': 'test-blue.example.co.uk.',
+                            'EvaluateTargetHealth': False
+                        }
+                    }
+                }]
+            }
+        }
+
+        assert usecase.build_change_dict() == expected_dict
+
+    def test_end_to_end(self):
+        usecase = FlipDNSRecord(
+            client=ClientMock(),
+            live='test-green.example.co.uk',
+            green='test-green.example.co.uk',
+            blue='test-blue.example.co.uk',
+            target_domain='test.example.co.uk'
+        )
+
+        assert usecase.call()['ChangeInfo']['Comment'] == 'Flipping live to test-blue.example.co.uk.'

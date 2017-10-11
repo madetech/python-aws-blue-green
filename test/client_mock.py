@@ -3,6 +3,15 @@ class ClientMock:
         self.hosted_zones = []
         self.resource_record_sets = []
 
+    def change_resource_record_sets(self, HostedZoneId, ChangeBatch):
+        return {
+            'ChangeInfo': {
+                'Id': '/change/whoooop',
+                'Status': 'PENDING',
+                'Comment': ChangeBatch['Comment']
+            }
+        }
+
     def list_hosted_zones_by_name(self):
         return {'HostedZones': [{'Id': '/hosted/id', 'Name': 'example.co.uk.'}]}
 
