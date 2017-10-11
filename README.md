@@ -12,3 +12,14 @@ Each tools requirements may require additional variables, however you will alway
 
 We strongly advise creating a new IAM user just for Route53 just in case.
 
+## Tools
+
+### Retrieving currently live domain
+```
+/bin/current_live_environment
+```
+Returns the current live environment
+
+**Additional ENV variables**
+
+`TARGET_DEPLOY_DOMAIN` - the domain you wish to get a DNS target from.
