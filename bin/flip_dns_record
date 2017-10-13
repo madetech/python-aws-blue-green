@@ -10,14 +10,14 @@ if __name__ == "__main__":
                                   aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                                   aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
                                  )
-        usecase = FlipDNSRecord(
+        current_live = GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), aws_client).call()
+        print(FlipDNSRecord(
             client=aws_client,
-            live=sys.argv[1],
+            live=current_live,
             blue=os.getenv('BLUE_DEPLOY_DOMAIN'),
             green=os.getenv('GREEN_DEPLOY_DOMAIN'),
             target_domain = os.getenv('TARGET_DEPLOY_DOMAIN')
-        )
+        ).call()['ChangeInfo']['Comment'])
 
-        print(usecase.call()['ChangeInfo']['Comment'])
     except RuntimeError as error:
         print(format(error))
