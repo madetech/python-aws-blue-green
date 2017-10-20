@@ -1,5 +1,5 @@
 from src.get_inactive_environment import GetInactiveEnvironment
-from client_mock import ClientMock
+from test.client_mock import ClientMock
 
 class TestGetInactiveEnvironment:
     def test_gets_inactive_environment_correctly(self):

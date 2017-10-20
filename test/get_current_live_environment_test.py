@@ -1,5 +1,5 @@
 from src.get_current_live_environment import GetCurrentLiveEnvironment
-from client_mock import ClientMock
+from test.client_mock import ClientMock
 
 class TestGetCurrentLiveEnvironment:
     def test_gets_current_live_environment_correctly(self):
