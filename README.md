@@ -9,6 +9,7 @@ Each tools requirements may require additional variables, however you will alway
 
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION` - Region for the infrastructure
 - `BLUE_DEPLOY_DOMAIN` - the domain for "blue" platform.
 - `GREEN_DEPLOY_DOMAIN` - the domain for "green" platform.
 - `TARGET_DEPLOY_DOMAIN` - the domain you wish switch the DNS on.
@@ -34,3 +35,21 @@ Points `TARGET_DEPLOY_DOMAIN` at the alternate blue/green record
 env PYTHONPATH=. /bin/rollback
 ```
 Returns the current live environment
+
+### Start Instances for ELB
+```
+env PYTHONPATH=. /bin/start_instances
+```
+
+#### Extra Environment Variables
+
+- `ELB_NAME` - The ELB name that the instances belong to
+
+### Stop Instances for ELB
+```
+env PYTHONPATH=. /bin/stop_instances
+```
+
+#### Extra Environment Variables
+
+- `ELB_NAME` - The ELB name that the instances belong to
