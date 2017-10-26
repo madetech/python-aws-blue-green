@@ -1,4 +1,4 @@
-from client_mock import ClientMock
+from test.client_mock import ClientMock
 from src.flip_dns_record import FlipDNSRecord
 
 
