@@ -1,9 +1,9 @@
 class GetInactiveEnvironment:
-    def __init__(self, blue, green, target_domain, client):
+    def __init__(self, blue, green, target_domain, hosted_zone_gateway):
         self.target_domain = self.sanitize_domain(target_domain)
         self.blue = self.sanitize_domain(blue)
         self.green = self.sanitize_domain(green)
-        self.client = client
+        self.hosted_zone_gateway = hosted_zone_gateway
 
     def sanitize_domain(self, domain):
         domain = domain.strip()
@@ -12,9 +12,7 @@ class GetInactiveEnvironment:
         return domain
 
     def get_resource_record_sets(self):
-        zones = self.client.list_hosted_zones_by_name()
-        zone_id = zones['HostedZones'][0]['Id']
-        return self.client.list_resource_record_sets(HostedZoneId=zone_id)['ResourceRecordSets']
+        return self.hosted_zone_gateway.get_hosted_zone_records(self.target_domain)
 
     def get_live_record(self):
         resource_records = self.get_resource_record_sets()

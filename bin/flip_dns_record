@@ -13,7 +13,7 @@ if __name__ == "__main__":
                                   aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
                                  )
         hosted_zone_gateway = HostedZoneGateway(aws_client)
-        current_live = GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), aws_client).call()
+        current_live = GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), hosted_zone_gateway).call()
         print(FlipDNSRecord(
             client=aws_client,
             hosted_zone_gateway=hosted_zone_gateway,

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 import boto3
+
+from src.gateways.hosted_zone_gateway import HostedZoneGateway
 from src.get_inactive_environment import GetInactiveEnvironment
 
 RUNTIME_ERROR_MESSAGE = """Ensure all environment variables are defined:
@@ -20,8 +22,9 @@ if __name__ == "__main__":
                                   aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                                   aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
                                  )
+        hosted_zone_gateway = HostedZoneGateway(aws_client)
         print(GetInactiveEnvironment(
-            client=aws_client,
+            hosted_zone_gateway=aws_client,
             blue=os.getenv('BLUE_DEPLOY_DOMAIN'),
             green=os.getenv('GREEN_DEPLOY_DOMAIN'),
             target_domain = os.getenv('TARGET_DEPLOY_DOMAIN')).call())
