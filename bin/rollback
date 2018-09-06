@@ -16,6 +16,7 @@ if __name__ == "__main__":
         current_live = GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), hosted_zone_gateway).call()
         print(FlipDNSRecord(
             client=aws_client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live=current_live,
             blue=os.getenv('BLUE_DEPLOY_DOMAIN'),
             green=os.getenv('GREEN_DEPLOY_DOMAIN'),
