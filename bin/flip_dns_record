@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 import boto3
+
+from src.gateways.hosted_zone_gateway import HostedZoneGateway
 from src.get_current_live_environment import GetCurrentLiveEnvironment
 from src.flip_dns_record import FlipDNSRecord
 
@@ -10,9 +12,11 @@ if __name__ == "__main__":
                                   aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                                   aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
                                  )
+        hosted_zone_gateway = HostedZoneGateway(aws_client)
         current_live = GetCurrentLiveEnvironment(os.getenv('TARGET_DEPLOY_DOMAIN'), aws_client).call()
         print(FlipDNSRecord(
             client=aws_client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live=current_live,
             blue=os.getenv('BLUE_DEPLOY_DOMAIN'),
             green=os.getenv('GREEN_DEPLOY_DOMAIN'),

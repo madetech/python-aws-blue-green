@@ -1,6 +1,7 @@
 class FlipDNSRecord:
-    def __init__(self, client, live, green, blue, target_domain):
+    def __init__(self, client, hosted_zone_gateway, live, green, blue, target_domain):
         self.client = client
+        self.hosted_zone_gateway = hosted_zone_gateway
         self.live = self.sanitize_domain(live)
         self.green = self.sanitize_domain(green)
         self.blue = self.sanitize_domain(blue)
@@ -19,11 +20,11 @@ class FlipDNSRecord:
             return self.green
 
     def get_resource_record_sets(self):
-        return self.client.list_resource_record_sets(HostedZoneId=self.hosted_zone_id())['ResourceRecordSets']
+        return self.hosted_zone_gateway.get_hosted_zone_records(self.target_domain)
 
     def hosted_zone_id(self):
-        zones = self.client.list_hosted_zones_by_name()
-        return zones['HostedZones'][0]['Id']
+        zone = self.hosted_zone_gateway.get_hosted_zone(self.target_domain)
+        return zone['Id']
 
     def build_resource_dict(self):
         new_domain = self.get_non_live_resource()
@@ -39,7 +40,7 @@ class FlipDNSRecord:
 
     def build_change_dict(self):
         return {
-            'HostedZoneId':self.hosted_zone_id(),
+            'HostedZoneId': self.hosted_zone_id(),
             'ChangeBatch': {
                 'Comment': 'Flipping live to {0}'.format(self.get_non_live_resource()),
                 'Changes': [{
@@ -57,4 +58,3 @@ class FlipDNSRecord:
         )
 
         return response
-

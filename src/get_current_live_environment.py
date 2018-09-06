@@ -1,6 +1,3 @@
-from os.path import commonprefix
-
-
 class GetCurrentLiveEnvironment:
     def __init__(self, target_domain, hosted_zone_gateway):
         self.target_domain = self.sanitize_target_domain(target_domain)

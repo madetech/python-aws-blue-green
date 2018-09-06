@@ -1,11 +1,15 @@
+from src.gateways.hosted_zone_gateway import HostedZoneGateway
 from test.client_mock import ClientMock
 from src.flip_dns_record import FlipDNSRecord
 
 
 class TestFlipDNSRecord:
     def test_gets_correct_non_live_resource_record(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
         usecase = FlipDNSRecord(
-            client=ClientMock(),
+            client=client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live='test-green.example.co.uk',
             green='test-green.example.co.uk',
             blue='test-blue.example.co.uk',
@@ -15,8 +19,11 @@ class TestFlipDNSRecord:
         assert usecase.get_non_live_resource() == 'test-blue.example.co.uk.'
 
     def test_change_resource_dict(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
         usecase = FlipDNSRecord(
-            client=ClientMock(),
+            client=client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live='test-green.example.co.uk',
             green='test-green.example.co.uk',
             blue='test-blue.example.co.uk',
@@ -36,8 +43,11 @@ class TestFlipDNSRecord:
         assert usecase.build_resource_dict() == expected_dict
 
     def test_change_dict(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
         usecase = FlipDNSRecord(
-            client=ClientMock(),
+            client=client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live='test-green.example.co.uk',
             green='test-green.example.co.uk',
             blue='test-blue.example.co.uk',
@@ -66,8 +76,11 @@ class TestFlipDNSRecord:
         assert usecase.build_change_dict() == expected_dict
 
     def test_end_to_end(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
         usecase = FlipDNSRecord(
-            client=ClientMock(),
+            client=client,
+            hosted_zone_gateway=hosted_zone_gateway,
             live='test-green.example.co.uk',
             green='test-green.example.co.uk',
             blue='test-blue.example.co.uk',
