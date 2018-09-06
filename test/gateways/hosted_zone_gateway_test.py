@@ -1,26 +1,21 @@
-class ClientMock:
-    def __init__(self):
-        self.hosted_zones = []
-        self.resource_record_sets = []
+from src.gateways.hosted_zone_gateway import HostedZoneGateway
+from test.client_mock import ClientMock
 
-    def change_resource_record_sets(self, HostedZoneId, ChangeBatch):
-        return {
-            'ChangeInfo': {
-                'Id': '/change/whoooop',
-                'Status': 'PENDING',
-                'Comment': ChangeBatch['Comment']
-            }
+
+class TestHostedZoneGateway:
+    def test_correct_zone_is_found(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
+
+        assert hosted_zone_gateway.get_hosted_zone('test-blue.example.co.uk.') == {
+            'Id': '/hosted/id', 'Name': 'example.co.uk.'
         }
 
-    def list_hosted_zones_by_name(self):
-        return {'HostedZones': [
-            {'Id': '/hosted/other-id-1', 'Name': 'never-used-1.co.uk'},
-            {'Id': '/hosted/id', 'Name': 'example.co.uk.'},
-            {'Id': '/hosted/other-id-2', 'Name': 'never-used-2.co.uk'},
-        ]}
+    def test_correct_zone_records_found(self):
+        client = ClientMock()
+        hosted_zone_gateway = HostedZoneGateway(client)
 
-    def list_resource_record_sets(self, HostedZoneId):
-        return {'ResourceRecordSets': [
+        assert hosted_zone_gateway.get_hosted_zone_records('test-blue.example.co.uk.') == [
             {
                 'Name': 'test-blue.example.co.uk.',
                 'Type': 'A',
@@ -47,4 +42,4 @@ class ClientMock:
                     'DNSName': 'test-green.example.co.uk.',
                     'EvaluateTargetHealth': False
                 }
-            }]}
+            }]
