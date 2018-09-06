@@ -13,7 +13,11 @@ class ClientMock:
         }
 
     def list_hosted_zones_by_name(self):
-        return {'HostedZones': [{'Id': '/hosted/id', 'Name': 'example.co.uk.'}]}
+        return {'HostedZones': [
+            {'Id': '/hosted/other-id-1', 'Name': 'never-used-1.co.uk'},
+            {'Id': '/hosted/id', 'Name': 'example.co.uk.'},
+            {'Id': '/hosted/other-id-2', 'Name': 'never-used-2.co.uk'},
+        ]}
 
     def list_resource_record_sets(self, HostedZoneId):
         return {'ResourceRecordSets': [

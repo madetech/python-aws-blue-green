@@ -2,9 +2,9 @@ from os.path import commonprefix
 
 
 class GetCurrentLiveEnvironment:
-    def __init__(self, target_domain, client):
+    def __init__(self, target_domain, hosted_zone_gateway):
         self.target_domain = self.sanitize_target_domain(target_domain)
-        self.client = client
+        self.hosted_zone_gateway = hosted_zone_gateway
 
     def sanitize_target_domain(self, domain):
         domain = domain.strip()
@@ -12,24 +12,8 @@ class GetCurrentLiveEnvironment:
             domain += '.'
         return domain
 
-
     def get_resource_record_sets(self):
-        zones = self.client.list_hosted_zones_by_name()
-
-        # we need to find the zone that matches our target domain
-        # we do this by reversing the domains, and checking to see if there's a common prefix
-        zone_id = None
-        reversed_target_domain = ''.join(reversed(self.target_domain))
-        for zone in zones['HostedZones']:
-            reversed_hosted_zone_name = ''.join(reversed(zone['Name']))
-            common_name = commonprefix((reversed_hosted_zone_name, reversed_target_domain))
-            if len(common_name) == len(reversed_hosted_zone_name):
-                zone_id = zone['Id']
-                break
-        else:
-            raise ValueError('Could not find hosted zone for target domain: {}'.format(self.target_domain))
-
-        return self.client.list_resource_record_sets(HostedZoneId=zone_id)['ResourceRecordSets']
+        return self.hosted_zone_gateway.get_hosted_zone_records(self.target_domain)
 
     def get_live_record(self):
         resource_records = self.get_resource_record_sets()
