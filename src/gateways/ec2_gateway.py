@@ -13,3 +13,8 @@ class EC2Gateway:
         for instance_id in instance_ids:
             instance = self.ec2_resource.Instance(instance_id)
             instance.start()
+
+    def wait_for_instances_running(self, instance_ids):
+        for instance_id in instance_ids:
+            instance = self.ec2_resource.Instance(instance_id)
+            instance.wait_for_instances()

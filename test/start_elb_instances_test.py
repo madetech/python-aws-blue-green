@@ -13,3 +13,4 @@ class TestStartELBInstances:
         use_case.call('foo')
 
         assert elb_gateway.instance_ids == ec2_gateway.running_instance_ids
+        assert elb_gateway.instance_ids == ec2_gateway.waiting_for_running_instance_ids

@@ -7,6 +7,7 @@ class StartELBInstances:
         elb_descriptions = self.elb_gateway.elb_instance_ids([elb_name])
         instanceIds = self.__extract_instance_ids(elb_descriptions)
         self.ec2_gateway.start_instances(instanceIds)
+        self.ec2_gateway.wait_for_instances_running(instanceIds)
 
     # private
 
