@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 import os
 import boto3
+import sys
 from src.gateways.ec2_gateway import EC2Gateway
 from src.gateways.elb_gateway import ELBGateway
 from src.stop_elb_instances import StopELBInstances
 
 if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        elb_name = sys.argv[1]
+    elif os.getenv('ELB_NAME'):
+        elb_name = os.getenv('ELB_NAME')
+    else:
+        print('Must include an ELB Name as an argument')
+        sys.exit(1)
+
     elb_client = boto3.client('elb',
                             aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                             aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
@@ -19,4 +28,4 @@ if __name__ == "__main__":
     elb_gateway = ELBGateway(elb_client)
     ec2_gateway = EC2Gateway(ec2_resource)
     use_case = StopELBInstances(elb_gateway=elb_gateway, ec2_gateway=ec2_gateway)
-    use_case.call(os.getenv('ELB_NAME'))
+    use_case.call(elb_name)
